@@ -17,10 +17,10 @@ import com.widgetstore.service.WidgetService;
 
 @RestController
 public class WidgetController {
-	
+
 	@Autowired
 	WidgetService service;
-	
+
 	/**
 	 * Get all widgets
 	 * 
@@ -29,20 +29,20 @@ public class WidgetController {
 	@GetMapping("/widgets")
 	public ResponseEntity<List<Widget>> getAllWidgets() {
 		List<Widget> widget = service.getAllWidgets();
-		return new ResponseEntity<List<Widget>>(widget,HttpStatus.OK);
+		return new ResponseEntity<List<Widget>>(widget, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * Get widget by id
 	 * 
 	 * @return requested widget
 	 */
 	@GetMapping("/widget/{id}")
-	public ResponseEntity<Widget> getWidgetById(@PathVariable(value="id") Integer id) {
+	public ResponseEntity<Widget> getWidgetById(@PathVariable(value = "id") Integer id) {
 		Widget widget = service.getWidgetById(id);
-		return new ResponseEntity<Widget>(widget,HttpStatus.OK);
+		return new ResponseEntity<Widget>(widget, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * Inserts or Updates Widget
 	 * 
@@ -51,8 +51,22 @@ public class WidgetController {
 	 */
 	@PostMapping("/widget")
 	public ResponseEntity<Widget> saveWidget(@RequestBody WidgetRequestDTO requestDTO) {
-		Widget widget = service.saveWidget(requestDTO);
-		return new ResponseEntity<Widget>(widget,HttpStatus.OK);
+		Widget widget = invokeService(requestDTO);
+		return new ResponseEntity<Widget>(widget, HttpStatus.OK);
+	}
+
+	/**
+	 * Invoke widget creation if id is null otherwise update
+	 * 
+	 * @param requestDTO
+	 * @return
+	 */
+	private Widget invokeService(WidgetRequestDTO requestDTO) {
+		if (requestDTO.getId() == null) {
+			return service.createWidget(requestDTO);
+		} else {
+			return service.updateWidget(requestDTO);
+		}
 	}
 
 }
