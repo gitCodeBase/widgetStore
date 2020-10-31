@@ -1,44 +1,47 @@
 package com.widgetstore.model;
 
+
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
+@Table(name = "Widget")
 public class Widget {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	@Column(name= "id", nullable = false, updatable = false)
+	private Integer id;
+	
+	@Version
+	@Column(name= "versionId", nullable = false, columnDefinition="int default 0", insertable=false)
+	private Integer versionId;
 
+	@Column(name= "xCoord", nullable = false)
 	private Integer xCoordinate;
 	
+	@Column(name= "yCoord", nullable = false)
 	private Integer yCoordinate;
 	
-	@Column(unique = true, nullable = false)
+	@Column(name= "zCoord", unique = true, nullable = false)
 	private Integer zCoordinate;
 	
+	@Column(name= "width", nullable = false)
 	private Integer width;
 	
+	@Column(name= "height", nullable = false)
 	private Integer height;
 	
-	protected Widget() {
-		//default constructor exists only for the sake of JPA
-	}
+	@Column(name = "lastUpdateDate", columnDefinition = "datetime default current_timestamp",  nullable=false, updatable = false, insertable=false)
+	private LocalDateTime lastUpdateTimestamp;
 	
-	public Widget(Integer xCoordinate, Integer yCoordinate, Integer zCoordinate, Integer width, Integer height) {
-		super();
-		this.xCoordinate = xCoordinate;
-		this.yCoordinate = yCoordinate;
-		this.zCoordinate = zCoordinate;
-		this.width = width;
-		this.height = height;
-	}
-
-
-
 	public int getId() {
 		return id;
 	}
