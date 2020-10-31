@@ -14,7 +14,13 @@ public interface WidgetRepository extends CrudRepository<Widget, Integer> {
 	@Query(value="SELECT * FROM WIDGET ORDER BY Z_COORD ASC", nativeQuery=true)
 	List<Widget> getWidgets(PageRequest pageRequest);
 	
-	default List<Widget> getWidgets(int offset, int limit) {
-		return getWidgets(PageRequest.of(offset, limit));
+	default List<Widget> getWidgets(int limit) {
+		return getWidgets(PageRequest.of(0, limit));
 	}
+	
+	@Query(value="SELECT * FROM WIDGET where Z_COORD =? ORDER BY Z_COORD ASC", nativeQuery=true)
+	Widget findByZCoord(Integer zCoord);
+	
+	@Query(value="SELECT * FROM WIDGET where Z_COORD >=? ORDER BY Z_COORD ASC", nativeQuery=true)
+	List<Widget> findAllZCoord(Integer zCoord);
 }

@@ -34,9 +34,10 @@ public interface WidgetService {
 	/**
 	 * Get all widgets
 	 * 
+	 * @param limit - default 10 if no limit is specified
 	 * @return
 	 */
-	public List<Widget> getAllWidgets();
+	public List<Widget> getAllWidgets(int limit);
 
 	/**
 	 * Delete widget by Id

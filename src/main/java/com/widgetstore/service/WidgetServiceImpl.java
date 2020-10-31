@@ -1,5 +1,6 @@
 package com.widgetstore.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,11 @@ public class WidgetServiceImpl implements WidgetService {
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.widgetstore.service.WidgetService#getAllWidgets()
+	 * @see com.widgetstore.service.WidgetService#getAllWidgets(int)
 	 */
 	@Override
-	public List<Widget> getAllWidgets() {
-		int offset = 0;
-		int limit = 10;
-		//TODO: Accept Pagination parameters from url
-		return repository.getWidgets(offset, limit);
+	public List<Widget> getAllWidgets(int limit) {
+		return repository.getWidgets(limit);
 	}
 
 	
@@ -49,16 +47,44 @@ public class WidgetServiceImpl implements WidgetService {
 	@Override
 	public Widget createWidget(WidgetRequestDTO requestDTO) {
 		
-		Widget widget = new Widget();
-		widget.setHeight(requestDTO.getHeight());
-		widget.setWidth(requestDTO.getWidth());
-		widget.setxCoordinate(requestDTO.getxCoordinate());
-		widget.setyCoordinate(requestDTO.getyCoordinate());
-		widget.setzCoordinate(requestDTO.getzCoordinate()); 
+		Widget newWidget = new Widget();
+		newWidget.setHeight(requestDTO.getHeight());
+		newWidget.setWidth(requestDTO.getWidth());
+		newWidget.setxCoordinate(requestDTO.getxCoordinate());
+		newWidget.setyCoordinate(requestDTO.getyCoordinate());
+		newWidget.setzCoordinate(requestDTO.getzCoordinate());
 		
-		//TODO: implement logic related to z coordinate
+		Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
+		if(widgetByZCoord != null) {
+			shiftZCoordinate(requestDTO);
+		}
 		
-		return repository.save(widget);
+		return repository.save(newWidget);
+	}
+
+	/**
+	 * Get all widgets greater than or equal to the zCoordinate of the new widget.
+	 * Traverse through each widget and check if the zCoordinate is greater than or equal
+	 * to the incremented z coordinate. This check is used to ensure we are only updating the widgets that needs to be shifted.
+	 * 
+	 * @param requestDTO
+	 */
+	private void shiftZCoordinate(WidgetRequestDTO requestDTO) {
+		List<Widget> allWidgets = repository.findAllZCoord(requestDTO.getzCoordinate());
+		List<Widget> widgetsToBeShifted = new ArrayList<>();
+		int zcoord = requestDTO.getzCoordinate();
+		for(Widget widget: allWidgets) {
+			zcoord = zcoord + 1;
+			if(widget.getzCoordinate() >= zcoord ) {
+				break;
+			}
+			else {
+				widget.setzCoordinate(zcoord);
+				widgetsToBeShifted.add(widget);
+			}
+		}
+		
+		repository.saveAll(widgetsToBeShifted);
 	}
 	
 	/* (non-Javadoc)
@@ -72,9 +98,20 @@ public class WidgetServiceImpl implements WidgetService {
 			//Widget not found exception;
 		}
 		else {
-			//TODO:Update logic related to z coordinate, optimistic locking
+			
+			widget.setHeight(requestDTO.getHeight());
+			widget.setWidth(requestDTO.getWidth());
+			widget.setxCoordinate(requestDTO.getxCoordinate());
+			widget.setyCoordinate(requestDTO.getyCoordinate());
+			widget.setzCoordinate(requestDTO.getzCoordinate());
+			
+			Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
+			if(widgetByZCoord != null) {
+				shiftZCoordinate(requestDTO);
+			}
+			
 		}
-		return widget;
+		return repository.save(widget);
 	}
 
 
