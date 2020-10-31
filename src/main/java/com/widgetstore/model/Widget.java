@@ -30,7 +30,7 @@ public class Widget {
 	@Column(name= "yCoord", nullable = false)
 	private Integer yCoordinate;
 	
-	@Column(name= "zCoord", unique = true, nullable = false)
+	@Column(name= "zCoord", nullable = false)
 	private Integer zCoordinate;
 	
 	@Column(name= "width", nullable = false)

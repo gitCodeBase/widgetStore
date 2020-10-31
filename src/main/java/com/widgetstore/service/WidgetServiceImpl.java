@@ -1,12 +1,18 @@
 package com.widgetstore.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.widgetstore.dto.WidgetRequestDTO;
+import com.widgetstore.exception.WidgetNotFoundException;
 import com.widgetstore.model.Widget;
 import com.widgetstore.repository.WidgetRepository;
 
@@ -20,8 +26,9 @@ public class WidgetServiceImpl implements WidgetService {
 	 * @see com.widgetstore.service.WidgetService#getWidgetById(java.lang.Integer)
 	 */
 	@Override
-	public Widget getWidgetById(Integer id) {
-		return repository.findById(id).orElse(null);
+	@Transactional
+	public Widget getWidgetById(Integer id) throws WidgetNotFoundException {
+		return repository.findById(id).orElseThrow(() -> new WidgetNotFoundException(String.format("Widget with id %d not found.", id)));
 	}
 	
 	/* (non-Javadoc)
@@ -29,7 +36,7 @@ public class WidgetServiceImpl implements WidgetService {
 	 */
 	@Override
 	public List<Widget> getAllWidgets(int limit) {
-		return repository.getWidgets(limit);
+		return Optional.ofNullable(repository.getWidgets(limit)).orElse(Collections.emptyList());
 	}
 
 	
@@ -37,14 +44,17 @@ public class WidgetServiceImpl implements WidgetService {
 	 * @see com.widgetstore.service.WidgetService#deleteWidget(java.lang.Integer)
 	 */
 	@Override
-	public void deleteWidget(Integer id) {
+	public String deleteWidget(Integer id) {
 		repository.deleteById(id);
+		
+		return String.format("Succesfully deleted widget with id: %d", id);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.widgetstore.service.WidgetService#createWidget(com.widgetstore.dto.WidgetRequestDTO)
 	 */
 	@Override
+	@Transactional
 	public Widget createWidget(WidgetRequestDTO requestDTO) {
 		
 		Widget newWidget = new Widget();
@@ -52,7 +62,13 @@ public class WidgetServiceImpl implements WidgetService {
 		newWidget.setWidth(requestDTO.getWidth());
 		newWidget.setxCoordinate(requestDTO.getxCoordinate());
 		newWidget.setyCoordinate(requestDTO.getyCoordinate());
-		newWidget.setzCoordinate(requestDTO.getzCoordinate());
+		if(requestDTO.getzCoordinate() == null) {
+			int maxZCoord = repository.findMax();
+			newWidget.setzCoordinate(maxZCoord + 1);
+		}
+		else {
+			newWidget.setzCoordinate(requestDTO.getzCoordinate());
+		}
 		
 		Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
 		if(widgetByZCoord != null) {
@@ -74,6 +90,9 @@ public class WidgetServiceImpl implements WidgetService {
 		List<Widget> widgetsToBeShifted = new ArrayList<>();
 		int zcoord = requestDTO.getzCoordinate();
 		for(Widget widget: allWidgets) {
+			if(isUpdateRequest(requestDTO, widget)) {
+				continue;
+			}
 			zcoord = zcoord + 1;
 			if(widget.getzCoordinate() >= zcoord ) {
 				break;
@@ -85,33 +104,68 @@ public class WidgetServiceImpl implements WidgetService {
 		}
 		
 		repository.saveAll(widgetsToBeShifted);
+		
+	}
+
+	/**
+	 * @param requestDTO
+	 * @param widget
+	 * @return
+	 */
+	private boolean isUpdateRequest(WidgetRequestDTO requestDTO, Widget widget) {
+		return requestDTO.getId() != null  && requestDTO.getId().equals(widget.getId());
 	}
 	
 	/* (non-Javadoc)
 	 * @see com.widgetstore.service.WidgetService#updateWidget(com.widgetstore.dto.WidgetRequestDTO)
 	 */
 	@Override
-	public Widget updateWidget(WidgetRequestDTO requestDTO) {
+	@Transactional
+	public Widget updateWidget(WidgetRequestDTO requestDTO) throws WidgetNotFoundException {
 		Widget widget = repository.findById(requestDTO.getId()).orElse(null);
 		
 		if(widget == null) {
-			//Widget not found exception;
+			throw new WidgetNotFoundException(String.format("Widget with id %d not found.", requestDTO.getId()));
 		}
 		else {
-			
-			widget.setHeight(requestDTO.getHeight());
-			widget.setWidth(requestDTO.getWidth());
-			widget.setxCoordinate(requestDTO.getxCoordinate());
-			widget.setyCoordinate(requestDTO.getyCoordinate());
-			widget.setzCoordinate(requestDTO.getzCoordinate());
-			
-			Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
-			if(widgetByZCoord != null) {
-				shiftZCoordinate(requestDTO);
+			if(isModified(requestDTO.getHeight(), widget.getHeight())) {
+				widget.setHeight(requestDTO.getHeight());
+			}
+			if(isModified(requestDTO.getWidth(), widget.getWidth())) {
+				widget.setWidth(requestDTO.getWidth());
+			}
+			if(isModified(requestDTO.getxCoordinate(), widget.getxCoordinate())) {
+				widget.setxCoordinate(requestDTO.getxCoordinate());
+			}
+			if(isModified(requestDTO.getyCoordinate(), widget.getyCoordinate())) {
+				widget.setyCoordinate(requestDTO.getyCoordinate());
 			}
 			
+			if(isModified(requestDTO.getzCoordinate(), widget.getzCoordinate())) {
+				Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
+				if(widgetByZCoord != null) {
+					shiftZCoordinate(requestDTO);
+				}
+				widget.setzCoordinate(requestDTO.getzCoordinate());
+			}
+
 		}
 		return repository.save(widget);
+	}
+
+	/**
+	 * Check if the value is modified
+	 * 
+	 * @param requestDTO
+	 * @param widget
+	 * @return true or false
+	 */
+	private boolean isModified(Integer newObj, Integer existingObj) {
+		if(newObj == null) {
+			return false;
+		}
+		
+		return !existingObj.equals(newObj);
 	}
 
 

@@ -3,6 +3,7 @@ package com.widgetstore.service;
 import java.util.List;
 
 import com.widgetstore.dto.WidgetRequestDTO;
+import com.widgetstore.exception.WidgetNotFoundException;
 import com.widgetstore.model.Widget;
 
 public interface WidgetService {
@@ -12,8 +13,9 @@ public interface WidgetService {
 	 * 
 	 * @param id
 	 * @return widget details
+	 * @throws WidgetNotFoundException 
 	 */
-	public Widget getWidgetById(Integer id);
+	public Widget getWidgetById(Integer id) throws WidgetNotFoundException;
 
 	/**
 	 * Create a new widget
@@ -28,8 +30,9 @@ public interface WidgetService {
 	 * 
 	 * @param requestDTO
 	 * @return updated widget
+	 * @throws WidgetNotFoundException 
 	 */
-	public Widget updateWidget(WidgetRequestDTO requestDTO);
+	public Widget updateWidget(WidgetRequestDTO requestDTO) throws WidgetNotFoundException;
 
 	/**
 	 * Get all widgets
@@ -44,6 +47,6 @@ public interface WidgetService {
 	 * 
 	 * @param id
 	 */
-	public void deleteWidget(Integer id);
+	public String deleteWidget(Integer id);
 
 }

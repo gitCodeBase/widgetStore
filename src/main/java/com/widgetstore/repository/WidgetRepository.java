@@ -23,4 +23,7 @@ public interface WidgetRepository extends CrudRepository<Widget, Integer> {
 	
 	@Query(value="SELECT * FROM WIDGET where Z_COORD >=? ORDER BY Z_COORD ASC", nativeQuery=true)
 	List<Widget> findAllZCoord(Integer zCoord);
+	
+	@Query(value="SELECT max(Z_COORD) FROM WIDGET", nativeQuery=true)
+	int findMax();
 }
