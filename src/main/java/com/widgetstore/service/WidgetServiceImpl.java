@@ -1,5 +1,6 @@
 package com.widgetstore.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,6 +100,7 @@ public class WidgetServiceImpl implements WidgetService {
 			}
 			else {
 				widget.setzCoordinate(zcoord);
+				applyLastModifiedDate(widget);
 				widgetsToBeShifted.add(widget);
 			}
 		}
@@ -150,7 +152,16 @@ public class WidgetServiceImpl implements WidgetService {
 			}
 
 		}
+		applyLastModifiedDate(widget);
 		return repository.save(widget);
+	}
+
+	/**
+	 * @param widget
+	 */
+	private void applyLastModifiedDate(Widget widget) {
+		LocalDateTime now = LocalDateTime.now();
+		widget.setLastUpdateTimestamp(now);
 	}
 
 	/**
@@ -167,6 +178,5 @@ public class WidgetServiceImpl implements WidgetService {
 		
 		return !existingObj.equals(newObj);
 	}
-
 
 }

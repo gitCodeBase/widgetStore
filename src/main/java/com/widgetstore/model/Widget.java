@@ -1,6 +1,5 @@
 package com.widgetstore.model;
 
-
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -11,37 +10,40 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 @Table(name = "Widget")
 public class Widget {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name= "id", nullable = false, updatable = false)
+	@Column(name = "id", nullable = false, updatable = false)
 	private Integer id;
-	
+
 	@Version
-	@Column(name= "versionId", nullable = false, columnDefinition="int default 0", insertable=false)
+	@Column(name = "VERSION_ID", nullable = false, columnDefinition = "int default 0")
 	private Integer versionId;
 
-	@Column(name= "xCoord", nullable = false)
+	@Column(name = "X_COORD", nullable = false)
 	private Integer xCoordinate;
-	
-	@Column(name= "yCoord", nullable = false)
+
+	@Column(name = "Y_COORD", nullable = false)
 	private Integer yCoordinate;
-	
-	@Column(name= "zCoord", nullable = false)
+
+	@Column(name = "Z_COORD", nullable = false)
 	private Integer zCoordinate;
-	
-	@Column(name= "width", nullable = false)
+
+	@Column(name = "WIDTH", nullable = false)
 	private Integer width;
-	
-	@Column(name= "height", nullable = false)
+
+	@Column(name = "HEIGHT", nullable = false)
 	private Integer height;
-	
-	@Column(name = "lastUpdateDate", columnDefinition = "datetime default current_timestamp",  nullable=false, updatable = false, insertable=false)
+
+	@UpdateTimestamp
+	@Column(name = "LAST_UPDATE_DATE", columnDefinition = "datetime default current_timestamp", nullable = false, insertable = false)
 	private LocalDateTime lastUpdateTimestamp;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -88,6 +90,14 @@ public class Widget {
 
 	public void setHeight(Integer height) {
 		this.height = height;
+	}
+
+	public LocalDateTime getLastUpdateTimestamp() {
+		return lastUpdateTimestamp;
+	}
+
+	public void setLastUpdateTimestamp(LocalDateTime lastUpdateTimestamp) {
+		this.lastUpdateTimestamp = lastUpdateTimestamp;
 	}
 
 }
