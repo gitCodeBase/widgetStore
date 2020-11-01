@@ -1,6 +1,6 @@
 # widgetStore
 
-EndPoints:
+EndPoints: Swagger UI: http://localhost:8080/swagger-ui/
 
 Create and Update     - POST : http://localhost:8080/api/widget
 

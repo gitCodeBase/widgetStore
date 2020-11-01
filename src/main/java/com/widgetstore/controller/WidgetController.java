@@ -20,6 +20,9 @@ import com.widgetstore.exception.WidgetValidationException;
 import com.widgetstore.model.Widget;
 import com.widgetstore.service.WidgetService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/api")
 public class WidgetController {
@@ -70,6 +73,7 @@ public class WidgetController {
 	 * @throws WidgetNotFoundException 
 	 * @throws WidgetValidationException 
 	 */
+	@ApiOperation(notes="Service for creating widget will be invoked if the value of the id is present, other wise invokes update service", value = "Create or Update Widget")
 	@PostMapping("/widget")
 	public ResponseEntity<Widget> saveWidget(@RequestBody WidgetRequestDTO requestDTO) throws WidgetNotFoundException, WidgetValidationException {
 		validate(requestDTO);
@@ -91,14 +95,14 @@ public class WidgetController {
 	}
 
 	/**
-	 * Invoke widget creation if id is null otherwise update
+	 * Invoke widget creation if id is null or zero otherwise update
 	 * 
 	 * @param requestDTO
 	 * @return
 	 * @throws WidgetNotFoundException 
 	 */
 	private Widget invokeService(WidgetRequestDTO requestDTO) throws WidgetNotFoundException {
-		if (requestDTO.getId() == null) {
+		if (requestDTO.getId() == null || requestDTO.getId() == 0) {
 			return service.createWidget(requestDTO);
 		} else {
 			return service.updateWidget(requestDTO);
