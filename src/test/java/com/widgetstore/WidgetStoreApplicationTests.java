@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.widgetstore.controller.WidgetController;
 
 @SpringBootTest
-class WidgetServiceApplicationTests {
+class WidgetStoreApplicationTests {
 	@Autowired
 	private WidgetController controller;
 

@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.widgetstore.dto.WidgetRequestDTO;
 import com.widgetstore.exception.WidgetNotFoundException;
@@ -20,8 +19,12 @@ import com.widgetstore.repository.WidgetRepository;
 @Service
 public class WidgetServiceImpl implements WidgetService {
 	
-	@Autowired
 	WidgetRepository repository;
+	
+	@Autowired
+	public WidgetServiceImpl(WidgetRepository repository) {
+		this.repository = repository;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.widgetstore.service.WidgetService#getWidgetById(java.lang.Integer)
