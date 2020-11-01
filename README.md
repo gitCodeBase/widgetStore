@@ -1,10 +1,10 @@
 # widgetStore
 
-EndPoints:
+END POINTS:
 
-Create and Update     - POST : http://localhost:8080/api/widget
+CREATE AND UPDATE   - POST : http://localhost:8080/api/widget
 
-CREATE REQUEST BODY:
+CREATE Request Body:
 {
 	"xCoordinate":1,
 	"yCoordinate":1,
@@ -13,7 +13,7 @@ CREATE REQUEST BODY:
 	"height":100
 }
 
-UPDATE REQUEST BODY
+UPDATE Request Body:
 {
 	"id":1
 	"xCoordinate":1,
@@ -25,6 +25,6 @@ UPDATE REQUEST BODY
 
 GetWidget By Id       - GET: http://localhost:8080/api/widget/{id}
 
-Get All widgets       - GET: http://localhost:8080/api/widgets?limit={any number}
+Get All widgets       - GET: http://localhost:8080/api/widgets?limit={anyNumber}
 
 Delete Widget by id   - DELETE: http://localhost:8080/api/widget/{id}
