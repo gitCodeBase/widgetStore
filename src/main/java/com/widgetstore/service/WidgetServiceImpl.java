@@ -67,14 +67,14 @@ public class WidgetServiceImpl implements WidgetService {
 		newWidget.setxCoordinate(requestDTO.getxCoordinate());
 		newWidget.setyCoordinate(requestDTO.getyCoordinate());
 		if(requestDTO.getzCoordinate() == null) {
-			int maxZCoord = repository.findMax();
+			int maxZCoord = repository.findMax(requestDTO.getxCoordinate(),requestDTO.getyCoordinate());
 			newWidget.setzCoordinate(maxZCoord + 1);
 		}
 		else {
 			newWidget.setzCoordinate(requestDTO.getzCoordinate());
 		}
 		
-		Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
+		Widget widgetByZCoord = repository.findByXYZCoord(requestDTO.getzCoordinate(), requestDTO.getxCoordinate(),requestDTO.getyCoordinate());
 		if(widgetByZCoord != null) {
 			shiftZCoordinate(requestDTO);
 		}
@@ -83,14 +83,14 @@ public class WidgetServiceImpl implements WidgetService {
 	}
 
 	/**
-	 * Get all widgets greater than or equal to the zCoordinate of the new widget.
+	 * Get all widgets having same x and Y coordiante and z greater than or equal to the zCoordinate of the new widget.
 	 * Traverse through each widget and check if the zCoordinate is greater than or equal
-	 * to the incremented z coordinate. This check is used to ensure we are only updating the widgets that needs to be shifted.
+	 * to the incremented z coordinate.
 	 * 
 	 * @param requestDTO
 	 */
 	private void shiftZCoordinate(WidgetRequestDTO requestDTO) {
-		List<Widget> allWidgets = repository.findAllZCoord(requestDTO.getzCoordinate());
+		List<Widget> allWidgets = repository.findAllZCoord(requestDTO.getzCoordinate(), requestDTO.getxCoordinate(), requestDTO.getyCoordinate());
 		List<Widget> widgetsToBeShifted = new ArrayList<>();
 		int zcoord = requestDTO.getzCoordinate();
 		for(Widget widget: allWidgets) {
@@ -147,7 +147,7 @@ public class WidgetServiceImpl implements WidgetService {
 			}
 			
 			if(isModified(requestDTO.getzCoordinate(), widget.getzCoordinate())) {
-				Widget widgetByZCoord = repository.findByZCoord(requestDTO.getzCoordinate());
+				Widget widgetByZCoord = repository.findByXYZCoord(requestDTO.getzCoordinate(),requestDTO.getxCoordinate(),requestDTO.getyCoordinate());
 				if(widgetByZCoord != null) {
 					shiftZCoordinate(requestDTO);
 				}
