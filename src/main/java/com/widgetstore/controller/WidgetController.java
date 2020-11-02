@@ -34,9 +34,11 @@ public class WidgetController {
 	 * Get all widgets
 	 * 
 	 * @return list of widgets
+	 * @throws WidgetValidationException 
 	 */
 	@GetMapping("/widgets")
-	public ResponseEntity<List<Widget>> getAllWidgets(@RequestParam(name = "limit", defaultValue = "10", required = false) int limit) {
+	public ResponseEntity<List<Widget>> getAllWidgets(@RequestParam(name = "limit", defaultValue = "10", required = false) int limit) throws WidgetValidationException {
+		validateMaxLimit(limit);
 		List<Widget> widget = service.getAllWidgets(limit);
 		return new ResponseEntity<List<Widget>>(widget, HttpStatus.OK);
 	}
@@ -92,6 +94,19 @@ public class WidgetController {
 			throw new WidgetValidationException("Value of Width and Height attributes should be greater than zer0");
 		}
 		
+	}
+	
+	/**
+	 * Throws validation exception the pagination limit exceeds the maximum
+	 * limit:500
+	 * 
+	 * @param limit
+	 * @throws WidgetValidationException
+	 */
+	private void validateMaxLimit(int limit) throws WidgetValidationException {
+		if(limit > 500) {
+			throw new WidgetValidationException("Page limit for listing widgets should not exceed 500");
+		}
 	}
 
 	/**

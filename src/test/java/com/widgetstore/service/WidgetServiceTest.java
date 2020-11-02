@@ -36,7 +36,7 @@ public class WidgetServiceTest {
 	void whenValidInputForCreation_thenReturnCreatedWidget() throws Exception {
 		WidgetRequestDTO request = DataSet.buildRequest(true, false);
 		
-		Mockito.when(repository.findByXYZCoord(request.getzCoordinate(),request.getxCoordinate(),request.getyCoordinate()))
+		Mockito.when(repository.findByZCoord(request.getzCoordinate()))
 	      .thenReturn(null);
 		Mockito.when(repository.save(Mockito.any()))
 	      .thenReturn(DataSet.getWidget());
@@ -60,7 +60,7 @@ public class WidgetServiceTest {
 		
 		Mockito.when(repository.findById(request.getId()))
 	      .thenReturn(Optional.of(existingObject));
-		Mockito.when(repository.findByXYZCoord(request.getzCoordinate(), request.getxCoordinate(), request.getyCoordinate()))
+		Mockito.when(repository.findByZCoord(request.getzCoordinate()))
 	      .thenReturn(null);
 		Mockito.when(repository.save(Mockito.any()))
 	      .thenReturn(DataSet.getWidget());

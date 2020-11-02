@@ -18,12 +18,12 @@ public interface WidgetRepository extends CrudRepository<Widget, Integer> {
 		return getWidgets(PageRequest.of(0, limit));
 	}
 	
-	@Query(value="SELECT * FROM WIDGET where Z_COORD =? AND X_COORD=? AND Y_COORD=? ORDER BY Z_COORD ASC", nativeQuery=true)
-	Widget findByXYZCoord(Integer zCoord, Integer xCoord, Integer yCoord);
+	@Query(value="SELECT * FROM WIDGET where Z_COORD =? ORDER BY Z_COORD ASC", nativeQuery=true)
+	Widget findByZCoord(Integer zCoord);
 	
-	@Query(value="SELECT * FROM WIDGET where Z_COORD >=? AND X_COORD=? AND Y_COORD=? ORDER BY Z_COORD ASC", nativeQuery=true)
-	List<Widget> findAllZCoord(Integer zCoord,Integer xCoord, Integer yCoord);
+	@Query(value="SELECT * FROM WIDGET where Z_COORD >=? ORDER BY Z_COORD ASC", nativeQuery=true)
+	List<Widget> findAllZCoord(Integer zCoord);
 	
-	@Query(value="SELECT max(Z_COORD) FROM WIDGET WHERE X_COORD=? AND Y_COORD=?", nativeQuery=true)
-	int findMax(Integer xCoord, Integer yCoord);
+	@Query(value="SELECT max(Z_COORD) FROM WIDGET", nativeQuery=true)
+	int findMax();
 }
